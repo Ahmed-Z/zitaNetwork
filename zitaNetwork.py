@@ -1,5 +1,6 @@
 from scapy.all import *
 import Sniffer,subprocess,os,functions
+import dns_spoofer
 
 try:
     from infos import *
@@ -139,6 +140,12 @@ $$$$$$$$\ $$ |  \$$$$  |$$ |  $$ |         $$ |\$$$$$$  |\$$$$$$  |$$ |
                             target_mac = functions.get_target_mac(target)
                             functions.restore(target,hosts[target],gateway,gateway_mac)
                             print("\nrestoring: "+ target)
+            ################ DNS spoofing ########################################
+            if cmd == "dnsspoof":
+                website = str(input("[+] Website you want to spoof: "))
+                ipAddr = str(input("[+] IP of the website you want to be replaced with: "))
+                dns_spoofer.set_global(website,ipAddr)
+                dns_spoofer.start()
 
 
 
