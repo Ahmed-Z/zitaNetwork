@@ -1,4 +1,6 @@
 import scapy.all as scapy
+import subprocess, socket
+import concurrent.futures
 
 def spoof (host_ip,host_mac,gateway,gateway_mac):
     packet1 = scapy.ARP(op=2,pdst=host_ip,hwdst=host_mac, psrc=gateway)
@@ -33,3 +35,22 @@ def get_mac_vendor(mac):
             if mac in line:
                 return line[7:]
     return 'Unknown' 
+
+def change_mac(interface,new_mac):
+    subprocess.call(["sudo","ifconfig",interface,"down"])
+    subprocess.call(["sudo","ifconfig",interface,"hw","ether",new_mac])
+    subprocess.call(["sudo","ifconfig",interface,"up"])
+
+def pscan(port,target):
+    target  = socket.gethostbyname(target)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    result = sock.connect_ex((target, port))
+    if result == 0:
+        print("Open Port on : "+ str(port))
+    sock.close()
+
+def scan_ports(target):
+    port_list = list(range(1,10000))
+    target = target.split(' ') * len(port_list)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+            executor.map(pscan, port_list, target)

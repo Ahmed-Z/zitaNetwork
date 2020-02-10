@@ -1,4 +1,4 @@
-import subprocess
+import subprocess,re
 
 
 cmd = subprocess.check_output('ip r | grep default',shell = True, stderr=None)
@@ -11,3 +11,5 @@ network = str(result[0].decode('utf-8'))
 localIp = str(result[8].decode('utf-8'))
 prefix = network.split('/')[1]
 
+res = subprocess.check_output(["ifconfig",interface])
+mac = re.search(r"\w\w:\w\w:\w\w:\w\w:\w\w",res.decode("utf-8")).group(0)

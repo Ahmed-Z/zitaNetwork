@@ -11,9 +11,8 @@ class ZitaNetwork:
 
         if os.geteuid() != 0:
             exit("You need to have root privileges to run this script.\nPlease try again, this time using 'sudo'. Exiting.")
-        
         print(
-            """
+            """\033[1;32;40m
 
 
           $$\   $$\      $$$$$$\        $$$$$$$$\                  $$\ 
@@ -24,8 +23,6 @@ $$$$$$$$\ $$\ $$$$$$\   $$ /  $$ |         $$ | $$$$$$\   $$$$$$\  $$ |
  $$  _/   $$ |  $$ |$$\ $$ |  $$ |         $$ |$$ |  $$ |$$ |  $$ |$$ |
 $$$$$$$$\ $$ |  \$$$$  |$$ |  $$ |         $$ |\$$$$$$  |\$$$$$$  |$$ |
 \________|\__|   \____/ \__|  \__|         \__| \______/  \______/ \__|
-                                                                       
-                                                                       
                                                                        
 
 """
@@ -38,7 +35,7 @@ $$$$$$$$\ $$ |  \$$$$  |$$ |  $$ |         $$ |\$$$$$$  |\$$$$$$  |$$ |
         gateway_mac = functions.get_target_mac(gateway)
         while(True):
             try:
-                cmd = str(input("\n> "))
+                cmd = str(input("\n\033[1;32;40m> "))
             except KeyboardInterrupt:
                 exit("Exiting\n")
         ################### Scanning ####################    
@@ -70,6 +67,10 @@ $$$$$$$$\ $$ |  \$$$$  |$$ |  $$ |         $$ |\$$$$$$  |\$$$$$$  |$$ |
                 print('Gateway: ' + gateway)
                 print('Interface: ' + interface)
                 print('Local ip address: ' + localIp)
+                print('MAC address: ' + mac)
+            ################### Change MAC ########################
+            if cmd.split(' ')[0]=='mac':
+                functions.change_mac(interface,cmd.split(' ')[1])
             ################### Setting Target ####################
             if cmd.split(' ')[0]=='target':
                 target = cmd.split(' ')[1]
@@ -79,7 +80,7 @@ $$$$$$$$\ $$ |  \$$$$  |$$ |  $$ |         $$ |\$$$$$$  |\$$$$$$  |$$ |
                 else:
                     while(True):
                             try:
-                                cmd = str(input("["+target+"] > "))
+                                cmd = str(input("\033[1;33;40m["+target+"]\033[1;32;40m > "))
                             except KeyboardInterrupt:
                                 break
                             if cmd == "exit":
@@ -95,13 +96,13 @@ $$$$$$$$\ $$ |  \$$$$  |$$ |  $$ |         $$ |\$$$$$$  |\$$$$$$  |$$ |
                                     while True:
                                         functions.spoof(target,target_mac,gateway,gateway_mac)
                                         p+=2
-                                        print("\rSending packets ["+ str(p) +"]" ,end='')
+                                        print("\r\033[1;31;40mSending packets ["+ str(p) +"]" ,end='')
                                         time.sleep(1)
                                 except KeyboardInterrupt:
                                     functions.restore(target,target_mac,gateway,gateway_mac)
-                                    print("\nRestoring order ..")
+                                    print("\n\033[1;32;40mRestoring order ..")
                                     print("Spoofing Stopped")
-                            ############### kiccking ##############      
+                            ############### kicking ##############      
                             if cmd == "kick":
                                 try:
                                     p = 0
@@ -115,6 +116,10 @@ $$$$$$$$\ $$ |  \$$$$  |$$ |  $$ |         $$ |\$$$$$$  |\$$$$$$  |$$ |
                                 except KeyboardInterrupt:
                                     functions.restore(target,target_mac,gateway,gateway_mac)
                                     print("\nRestoring order ..")
+                            ############## Scaning Ports ####################
+                            if cmd == "pscan":
+                                print("[+] Scannig first 10000 Ports\n")
+                                functions.scan_ports(target)
 
             ################# jamming entire Network #########################
             if cmd == "jamm":
