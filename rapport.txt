@@ -1,0 +1,54 @@
+1- introduction to the Tool
+
+2- Defining MITM attacks:
+    - how network work ? (protocols - packets - gateway)
+    - danger of man in the middle attacks 
+    - insecure http
+
+3- why python3
+
+4- introduction to scapy
+
+5- Setting the lab
+
+6- ARP scanning:
+    - Different method to scan a network for hosts
+    - why is scanning is important before an attack (hacking methodology : information gathering)
+    - explaining the ARP protocol (capture arp table of windows victim)
+
+7- Changing MAC before an attack:
+    - why change mac ?
+    - how to change mac in linux (linux commands)
+    - explaining code line by line
+
+
+I- simple attacks
+
+8- ARP spoofing
+    - how to exploit ARP weakness
+    - explain the spoof function line by line
+    - executing the attack and showing result (the victim arp table)
+    - follow ups attacks
+
+9- Sniffing:
+    - what is Sniffing
+    - what to sniff (urls, logins, session, cookies)
+
+10- Port scanner:
+    - what's a Port
+    - potential threat caused by an open Port
+    - explaining the code line by  line
+
+II- Advanced attacks
+
+    - Intercepting and modifing packets
+    - the use of iptables
+    - netfilterqueue
+    - Setting our local web server
+
+11- DNS spoofing:
+    - what is DNS
+    - capturing a packet containing DNS layer
+    - modifing the DNS answer
+    - explaining code
+    
