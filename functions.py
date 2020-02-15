@@ -52,5 +52,8 @@ def pscan(port,target):
 def scan_ports(target):
     port_list = list(range(1,10000))
     target = target.split(' ') * len(port_list)
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-            executor.map(pscan, port_list, target)
+    try:
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+                executor.map(pscan, port_list, target)
+    except KeyboardInterrupt:
+        print("\nPort scanning terminated.")

