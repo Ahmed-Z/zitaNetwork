@@ -1,6 +1,6 @@
 from scapy.all import *
-import Sniffer,subprocess,os,functions
-import dns_spoofer
+import subprocess,os,functions
+
 
 try:
     from infos import *
@@ -53,6 +53,7 @@ $$$$$$$$\ $$ |  \$$$$  |$$ |  $$ |         $$ |\$$$$$$  |\$$$$$$  |$$ |
 
         ################### Sniffing ####################
             if cmd == "sniff":
+                import Sniffer
                 try:
                     Sniffer.sniff(interface)
                 except KeyboardInterrupt:
@@ -142,10 +143,16 @@ $$$$$$$$\ $$ |  \$$$$  |$$ |  $$ |         $$ |\$$$$$$  |\$$$$$$  |$$ |
                             print("\nrestoring: "+ target)
             ################ DNS spoofing ########################################
             if cmd == "dnsspoof":
+                import dns_spoofer
                 website = str(input("[+] Website you want to spoof: "))
                 ipAddr = str(input("[+] IP of the website you want to be replaced with: "))
                 dns_spoofer.set_global(website,ipAddr)
                 dns_spoofer.start()
+            ############### ALERT ###################################################
+            if cmd == "alert":
+                import alert
+                alert.start()
+
 
 
 
