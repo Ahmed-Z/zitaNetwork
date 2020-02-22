@@ -50,6 +50,7 @@ $$$$$$$$\ $$ |  \$$$$  |$$ |  $$ |         $$ |\$$$$$$  |\$$$$$$  |$$ |
 info                    Print basic information about the local network.
 mac [spoofed_mac]       Change your current MAC address with spoofed_mac.
 scan                    Scan your network for targets.
+sniff                   Sniff urls and passwords of spoofed target.
 jamm                    Deny internet access for all hosts on the network.
 dnsspoof                Poison DNS request(s) of spoofed target. 
 alert                   Display alert message for spoofed target.
