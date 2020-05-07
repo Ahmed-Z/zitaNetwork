@@ -8,7 +8,7 @@ def sniff(interface):
 def act_on_sniff(packet):
     if packet.haslayer(scapy_http.http.HTTPRequest):
             #get Url
-            print('[+] URL >> ' + str(packet[scapy_http.http.HTTPRequest].Host+packet[scapy_http.http.HTTPRequest].Path))
+            print('[+] URL >> ' + (packet[scapy_http.http.HTTPRequest].Host+packet[scapy_http.http.HTTPRequest].Path).decode())
             #Get Logins
             if packet.haslayer(scapy.Raw):
                 load = packet[scapy.Raw].load

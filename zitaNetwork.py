@@ -31,8 +31,8 @@ $$$$$$$$\ $$ |  \$$$$  |$$ |  $$ |         $$ |\$$$$$$  |\$$$$$$  |$$ |
     
 
     def main(self):
-        g_commands = ["info","mac","scan","jamm","dnsspoof","alert","target","intercept"]
-        t_commands = ["spoof","kick","pscan"]
+        g_commands = ["info","mac","scan","jamm","dnsspoof","alert","target","intercept","help","sniff"]
+        t_commands = ["spoof","kick","pscan","help"]
         net = gateway + '/' + prefix
         gateway_mac = functions.get_target_mac(gateway)
         while(True):
